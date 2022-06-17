@@ -1,2 +1,2 @@
-### The ING Green project
+### Project Green
 
