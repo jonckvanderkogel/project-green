@@ -1,4 +1,4 @@
-package project.green.kafka.configuration;
+package project.green.configuration;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -17,7 +17,7 @@ import java.util.Collections;
 
 @Slf4j
 @Configuration
-public class PaymentConsumerConfig {
+public class PaymentKafkaConsumerConfig {
     @Bean
     public ReceiverOptions<String, PaymentEvent> kafkaReceiverOptions(@Value(value = "${payments.topic}") String topic, KafkaProperties kafkaProperties) {
         ReceiverOptions<String, PaymentEvent> basicReceiverOptions = ReceiverOptions.create(kafkaProperties.buildConsumerProperties());
@@ -30,7 +30,7 @@ public class PaymentConsumerConfig {
     }
 
     @Bean
-    public Flux<PaymentEvent> confirmationFlux(@Autowired ReactiveKafkaConsumerTemplate<String, PaymentEvent> kafkaConsumerTemplate) {
+    public Flux<PaymentEvent> paymentEventFlux(@Autowired ReactiveKafkaConsumerTemplate<String, PaymentEvent> kafkaConsumerTemplate) {
         return kafkaConsumerTemplate
             .receive()
             .share()
