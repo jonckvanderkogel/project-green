@@ -33,3 +33,16 @@ services:
       - kafka
     ports:
       - 9000:8080
+
+  database:
+    image: "postgres"
+    ports:
+      - 5432:5432
+    env_file:
+      - database.env
+    volumes:
+      - database-data:/var/lib/postgresql/data/
+
+volumes:
+  database-data:
+    driver: local

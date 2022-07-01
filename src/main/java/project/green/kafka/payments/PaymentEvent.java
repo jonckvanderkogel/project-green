@@ -1,9 +1,9 @@
 package project.green.kafka.payments;
 
 import lombok.*;
+import project.green.domain.Currency;
 import project.green.kafka.constraints.ValidIBAN;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.ZonedDateTime;
@@ -25,8 +25,11 @@ public class PaymentEvent {
     @NotEmpty
     private String nameTo;
 
-    @Valid
-    private CurrencyAmount currencyAmount;
+    @NotNull
+    private Double value;
+
+    @NotNull
+    private Currency currency;
 
     @NotNull
     private ZonedDateTime transactionDateTime;
@@ -37,9 +40,4 @@ public class PaymentEvent {
 
     private String extraDescription;
 
-    public record CurrencyAmount(@NotNull Double value, @NotNull Currency currency) {}
-
-    public enum Currency {
-        EUR, USD
-    }
 }

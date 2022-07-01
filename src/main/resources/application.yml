@@ -1,0 +1,27 @@
+spring:
+  kafka:
+    bootstrap-servers: 29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: paymentscg
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            use:
+              type:
+                headers: false
+            value:
+              default:
+                type: project.green.kafka.payments.PaymentEvent
+  liquibase:
+    change-log: classpath:db/changelog.xml
+
+payments:
+  topic: payments
+
+flux:
+  timeout: 10

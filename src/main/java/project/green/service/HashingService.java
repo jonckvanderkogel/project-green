@@ -13,6 +13,16 @@ public class HashingService {
         return bytesToHex(digest.get().digest(bytes));
     }
 
+    public String hash(final Byte[] bytes) {
+        byte[] bytesPrimitive = new byte[bytes.length];
+
+        int j=0;
+        for(Byte b: bytes)
+            bytesPrimitive[j++] = b;
+
+        return bytesToHex(digest.get().digest(bytesPrimitive));
+    }
+
     /*
      * From <a href="https://www.baeldung.com/sha-256-hashing-java">Baeldung</a>
      */

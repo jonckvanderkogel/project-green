@@ -1,0 +1,63 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
+    <changeSet author="jonck" id="create_payment_transaction_table">
+        <createTable tableName="payment_transaction">
+            <column name="id" type="BIGSERIAL" autoIncrement="true" startWith="2">
+                <constraints primaryKey="true" primaryKeyName="payment_transaction_pk"/>
+            </column>
+            <column name="from_account" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="to_account" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_from" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name_to" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" type="double precision">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_date_time" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="message" type="VARCHAR(255)" />
+            <column name="payment_reference" type="VARCHAR(255)" />
+            <column name="extra_description" type="VARCHAR(255)" />
+            <column name="block_hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="previous_block_hash" type="VARCHAR(255)" defaultValue="c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addUniqueConstraint columnNames="id,previous_block_hash" constraintName="id_previous_block_hash" tableName="payment_transaction"/>
+    </changeSet>
+    <changeSet author="jonck" id="insert_genesis_block">
+        <insert tableName="payment_transaction">
+            <column name="id" valueNumeric="1"/>
+            <column name="from_account" value="GENESIS" />
+            <column name="to_account" value="GENESIS" />
+            <column name="name_from" value="GENESIS" />
+            <column name="name_to" value="GENESIS" />
+            <column name="value" valueNumeric="0" />
+            <column name="currency" value="EUR" />
+            <column name="transaction_date_time" valueDate="0000-01-01T01:00:00" />
+            <column name="message" value="GENESIS" />
+            <column name="payment_reference" value="GENESIS" />
+            <column name="extra_description" value="GENESIS" />
+            <column name="block_hash" value="c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b" />
+            <column name="previous_block_hash" value="c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b" />
+        </insert>
+    </changeSet>
+    <changeSet author="jonck" id="add_block_hash_fk">
+        <addForeignKeyConstraint baseColumnNames="id, block_hash" baseTableName="payment_transaction" constraintName="payment_transaction_block_hash" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id, previous_block_hash" referencedTableName="payment_transaction"/>
+    </changeSet>
+</databaseChangeLog>

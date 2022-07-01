@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
 import project.green.kafka.payments.PaymentEvent;
-import project.green.service.InputValidationException;
 import reactor.core.publisher.Flux;
 import reactor.kafka.receiver.ReceiverRecord;
 import reactor.test.StepVerifier;
@@ -18,7 +17,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.stream.IntStream;
 
-import static project.green.kafka.payments.PaymentEvent.Currency.EUR;
+import static project.green.domain.Currency.EUR;
 
 public class PaymentKafkaConsumerConfigTest {
     private static final Faker FAKER = new Faker();
@@ -31,7 +30,7 @@ public class PaymentKafkaConsumerConfigTest {
         Mockito.when(mockedConsumerTemplate.receive()).thenReturn(receiverRecordFlux);
 
         StepVerifier.create(new PaymentKafkaConsumerConfig().paymentEventFlux(mockedConsumerTemplate))
-                .expectNextMatches(pe -> pe.getCurrencyAmount().currency().equals(EUR))
+                .expectNextMatches(pe -> pe.getCurrency().equals(EUR))
                 .expectNextCount(9)
                 .expectComplete()
                 .verify();
@@ -76,7 +75,8 @@ public class PaymentKafkaConsumerConfigTest {
                         .toString(),
                 FAKER.name().fullName(),
                 FAKER.name().fullName(),
-                new PaymentEvent.CurrencyAmount(100d, EUR),
+                100d,
+                EUR,
                 ZonedDateTime.of(LocalDateTime.of(0, 1, 1, 0, 0), ZoneId.of("GMT+01:00")),
                 FAKER.dune().quote(),
                 "12345",
