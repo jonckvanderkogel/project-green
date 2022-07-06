@@ -14,21 +14,16 @@ public class GenesisBlockTest {
         String sixtyFourZeros = "0000000000000000000000000000000000000000000000000000000000000000";
         HashingService hashingService = hashingService();
         GenesisBlock genesisBlock = GenesisBlock.INSTANCE;
-        hashingService.hash(sixtyFourZeros.getBytes(StandardCharsets.UTF_8));
 
         assertEquals(hashingService.hash(sixtyFourZeros.getBytes(StandardCharsets.UTF_8)), genesisBlock.previousBlockHash());
     }
 
     @Test
-    public void genesisBlockHashIsHashOfPreviousBlockHashAndTransactionDateTime() {
+    public void genesisBlockHashShouldBeHashOf64Zeros() {
         String sixtyFourZeros = "0000000000000000000000000000000000000000000000000000000000000000";
         HashingService hashingService = hashingService();
         GenesisBlock genesisBlock = GenesisBlock.INSTANCE;
-        String concatenatedHashes = hashingService
-            .hash(sixtyFourZeros.getBytes(StandardCharsets.UTF_8))
-            .concat(
-                hashingService.hash(genesisBlock.blockDateTime().toString().getBytes(StandardCharsets.UTF_8))
-            );
-        assertEquals(hashingService.hash(concatenatedHashes.getBytes(StandardCharsets.UTF_8)), genesisBlock.blockHash());
+
+        assertEquals(hashingService.hash(sixtyFourZeros.getBytes(StandardCharsets.UTF_8)), genesisBlock.blockHash());
     }
 }

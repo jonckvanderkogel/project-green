@@ -38,7 +38,7 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addUniqueConstraint columnNames="id,previous_block_hash" constraintName="id_previous_block_hash" tableName="payment_transaction"/>
+        <addUniqueConstraint columnNames="from_account, block_hash" constraintName="from_account_block_hash" tableName="payment_transaction"/>
     </changeSet>
     <changeSet author="jonck" id="insert_genesis_block">
         <insert tableName="payment_transaction">
@@ -58,6 +58,6 @@
         </insert>
     </changeSet>
     <changeSet author="jonck" id="add_block_hash_fk">
-        <addForeignKeyConstraint baseColumnNames="id, block_hash" baseTableName="payment_transaction" constraintName="payment_transaction_block_hash" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id, previous_block_hash" referencedTableName="payment_transaction"/>
+        <addForeignKeyConstraint baseColumnNames="from_account, previous_block_hash" baseTableName="payment_transaction" constraintName="payment_transaction_from_account_previous_block_hash" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="from_account, block_hash" referencedTableName="payment_transaction"/>
     </changeSet>
 </databaseChangeLog>

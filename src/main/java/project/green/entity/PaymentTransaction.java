@@ -2,15 +2,15 @@ package project.green.entity;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.data.relational.core.mapping.Table;
 import project.green.domain.Block;
 import project.green.domain.Currency;
-import project.green.kafka.payments.PaymentEvent;
 
 import javax.persistence.Id;
 import java.time.ZonedDateTime;
-import java.util.function.Function;
 
+@ToString
 @Builder
 @Data
 @Table("payment_transaction")
@@ -29,21 +29,6 @@ public class PaymentTransaction implements Block {
     private String extraDescription;
     private String blockHash;
     private String previousBlockHash;
-
-    public static PaymentTransaction of(PaymentEvent paymentEvent, Function<Byte[], String> hashingFun) {
-        return PaymentTransaction.builder()
-                .fromAccount(paymentEvent.getFromAccount())
-                .toAccount(paymentEvent.getToAccount())
-                .nameFrom(paymentEvent.getNameFrom())
-                .nameTo(paymentEvent.getNameTo())
-                .value(paymentEvent.getValue())
-                .currency(paymentEvent.getCurrency())
-                .transactionDateTime(paymentEvent.getTransactionDateTime())
-                .message(paymentEvent.getMessage())
-                .paymentReference(paymentEvent.getPaymentReference())
-                .extraDescription(paymentEvent.getExtraDescription())
-                .build();
-    }
 
     @Override
     public String blockHash() {

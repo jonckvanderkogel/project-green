@@ -12,25 +12,21 @@ public class GenesisBlock implements Block {
     public static final GenesisBlock INSTANCE = new GenesisBlock();
 
     /**
-     * The hash of the GenesisBlock is calculated by concatenating the String value of the following hashes in order:
-     * previousBlockHash
-     * blockDateTime
-     *
-     * Then calculate the SHA3 256 hash of the concatenated string to get the GenesisBlock blockHash.
+     * Genesis block hash is the SHA3 256 hash of a string of 64 zeros.
      * @return String
      */
     @Override
     public String blockHash() {
-        return "eb3b10813d0ad61a028e77574e3b032dd5f7710ebd6fb8d2e19c05b7c8469822";
+        return "c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b";
     }
 
     /**
-     * Genesis block previous block hash is the SHA3 256 hash of a string of 64 zeros.
+     * Genesis block previous block hash the same as the blockHash, there is nothing before it...
      * @return String
      */
     @Override
     public String previousBlockHash() {
-        return "c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b";
+        return blockHash();
     }
 
     @Override

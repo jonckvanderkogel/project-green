@@ -16,9 +16,9 @@ public class HashingService {
     public String hash(final Byte[] bytes) {
         byte[] bytesPrimitive = new byte[bytes.length];
 
-        int j=0;
+        int i=0;
         for(Byte b: bytes)
-            bytesPrimitive[j++] = b;
+            bytesPrimitive[i++] = b;
 
         return bytesToHex(digest.get().digest(bytesPrimitive));
     }
