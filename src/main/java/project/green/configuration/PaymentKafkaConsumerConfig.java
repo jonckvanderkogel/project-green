@@ -8,7 +8,10 @@ import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.reactive.ReactiveKafkaConsumerTemplate;
+import project.green.entity.PaymentTransactionFactory;
 import project.green.kafka.payments.PaymentEvent;
+import project.green.repository.PaymentTransactionRepository;
+import project.green.service.PaymentTransactionPersistenceService;
 import project.green.service.ValidationService;
 import reactor.core.publisher.Flux;
 import reactor.kafka.receiver.ReceiverOptions;
@@ -40,5 +43,12 @@ public class PaymentKafkaConsumerConfig {
                 log.error("Error in payment stream.", t);
                 log.error("Error happened on object: {}", o);
             });
+    }
+
+    @Bean
+    public PaymentTransactionPersistenceService paymentTransactionPersistenceService(@Autowired PaymentTransactionRepository paymentTransactionRepository,
+                                                                                     @Autowired PaymentTransactionFactory paymentTransactionFactory,
+                                                                                     @Autowired Flux<PaymentEvent> paymentEventFlux) {
+        return new PaymentTransactionPersistenceService(paymentTransactionRepository, paymentTransactionFactory, paymentEventFlux);
     }
 }
