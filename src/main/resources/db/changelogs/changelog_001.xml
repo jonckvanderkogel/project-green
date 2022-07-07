@@ -40,24 +40,4 @@
         </createTable>
         <addUniqueConstraint columnNames="from_account, block_hash" constraintName="from_account_block_hash" tableName="payment_transaction"/>
     </changeSet>
-    <changeSet author="jonck" id="insert_genesis_block">
-        <insert tableName="payment_transaction">
-            <column name="id" valueNumeric="1"/>
-            <column name="from_account" value="GENESIS" />
-            <column name="to_account" value="GENESIS" />
-            <column name="name_from" value="GENESIS" />
-            <column name="name_to" value="GENESIS" />
-            <column name="value" valueNumeric="0" />
-            <column name="currency" value="EUR" />
-            <column name="transaction_date_time" valueDate="0000-01-01T01:00:00" />
-            <column name="message" value="GENESIS" />
-            <column name="payment_reference" value="GENESIS" />
-            <column name="extra_description" value="GENESIS" />
-            <column name="block_hash" value="c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b" />
-            <column name="previous_block_hash" value="c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b" />
-        </insert>
-    </changeSet>
-    <changeSet author="jonck" id="add_block_hash_fk">
-        <addForeignKeyConstraint baseColumnNames="from_account, previous_block_hash" baseTableName="payment_transaction" constraintName="payment_transaction_from_account_previous_block_hash" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="from_account, block_hash" referencedTableName="payment_transaction"/>
-    </changeSet>
 </databaseChangeLog>
