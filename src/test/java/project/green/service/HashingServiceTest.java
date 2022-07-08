@@ -4,8 +4,8 @@ import org.junit.jupiter.api.Test;
 
 import java.nio.charset.StandardCharsets;
 
-import static project.green.support.HashingSupport.hashingService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static project.green.support.HashingSupport.hashingService;
 
 public class HashingServiceTest {
 
