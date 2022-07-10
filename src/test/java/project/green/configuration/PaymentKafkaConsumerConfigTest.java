@@ -12,7 +12,7 @@ import reactor.test.StepVerifier;
 import java.util.stream.IntStream;
 
 import static project.green.domain.Currency.EUR;
-import static project.green.support.PaymentEventSupport.generatePaymentEvent;
+import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
 
 public class PaymentKafkaConsumerConfigTest {
 

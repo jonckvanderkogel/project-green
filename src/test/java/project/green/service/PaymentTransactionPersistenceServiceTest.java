@@ -13,7 +13,7 @@ import reactor.test.StepVerifier;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static project.green.support.HashingSupport.hashingService;
-import static project.green.support.PaymentEventSupport.generatePaymentEvent;
+import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
 
 public class PaymentTransactionPersistenceServiceTest {
     @Test

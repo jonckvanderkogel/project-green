@@ -38,6 +38,19 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-        <addUniqueConstraint columnNames="from_account, block_hash" constraintName="from_account_block_hash" tableName="payment_transaction"/>
+    </changeSet>
+    <changeSet author="jonck" id="create_offset_table">
+        <createTable tableName="offset">
+            <column name="id" type="BIGSERIAL" autoIncrement="true" startWith="1">
+                <constraints primaryKey="true" primaryKeyName="offset_pk"/>
+            </column>
+            <column name="account" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_id" type="BIGSERIAL">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseColumnNames="transaction_id" baseTableName="offset" constraintName="offset_transaction_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_transaction"/>
     </changeSet>
 </databaseChangeLog>

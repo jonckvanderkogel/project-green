@@ -15,7 +15,7 @@ import java.time.format.DateTimeFormatter;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static project.green.domain.Currency.EUR;
 import static project.green.support.HashingSupport.hashingService;
-import static project.green.support.PaymentEventSupport.generatePaymentEvent;
+import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
 
 @Slf4j
 public class PaymentTransactionFactoryTest {
