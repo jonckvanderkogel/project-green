@@ -25,20 +25,6 @@ public class DatasourceConfiguration extends AbstractR2dbcConfiguration {
     private String username;
     private String password;
     private String database;
-    private String driverClassName;
-//
-//    @LiquibaseDataSource
-//    @Bean
-//    public DataSource dataSource() {
-//        var dataSourceBuilder = DataSourceBuilder.create();
-//        // jdbc:postgresql://<host>:<port>>/<database>
-//        dataSourceBuilder.url(String.format("jdbc:postgresql://%s:%d/%s", host, port, database));
-//        dataSourceBuilder.driverClassName(driverClassName);
-//        dataSourceBuilder.username(username);
-//        dataSourceBuilder.password(password);
-//
-//        return dataSourceBuilder.build();
-//    }
 
     @Bean(name = CONNECTION_FACTORY)
     @Override

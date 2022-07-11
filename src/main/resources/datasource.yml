@@ -4,4 +4,3 @@ datasource:
   username: user
   password: pass
   database: green
-  driver_class_name: org.postgresql.Driver
