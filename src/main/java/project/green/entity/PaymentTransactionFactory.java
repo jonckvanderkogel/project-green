@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class PaymentTransactionFactory {
     private final HashingService hashingService;
     private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-    private final static List<Function<PaymentEvent, Byte[]>> paymentByteFun = List.of(
+    private final static List<Function<PaymentEvent, Byte[]>> PAYMENT_BYTE_FUN = List.of(
         (pe) -> fromPrimByteArray(pe.getFromAccount().getBytes(StandardCharsets.UTF_8)),
         (pe) -> fromPrimByteArray(pe.getToAccount().getBytes(StandardCharsets.UTF_8)),
         (pe) -> fromPrimByteArray(pe.getNameFrom().getBytes(StandardCharsets.UTF_8)),
@@ -66,7 +66,7 @@ public class PaymentTransactionFactory {
     }
 
     private String calculateBlockHash(PaymentEvent paymentEvent, PaymentTransaction previousPaymentTransaction) {
-        String concatenatedHashes = paymentByteFun.stream()
+        String concatenatedHashes = PAYMENT_BYTE_FUN.stream()
             .map(fun -> hashingService.hash(fun.apply(paymentEvent)))
             .collect(Collectors.joining())
             .concat(previousPaymentTransaction.getBlockHash());
