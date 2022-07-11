@@ -3,11 +3,11 @@ package project.green.entity;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
 import project.green.domain.Block;
 import project.green.domain.Currency;
 
-import javax.persistence.Id;
 import java.time.ZonedDateTime;
 
 @ToString

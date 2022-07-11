@@ -4,7 +4,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.5.xsd">
     <changeSet author="jonck" id="create_payment_transaction_table">
         <createTable tableName="payment_transaction">
-            <column name="id" type="BIGSERIAL" autoIncrement="true" startWith="2">
+            <column name="id" type="BIGSERIAL" autoIncrement="true" startWith="1">
                 <constraints primaryKey="true" primaryKeyName="payment_transaction_pk"/>
             </column>
             <column name="from_account" type="VARCHAR(255)">
@@ -38,12 +38,16 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <createIndex tableName="payment_transaction" indexName="from_account_payment_transaction">
+            <column name="from_account" />
+        </createIndex>
+        <createIndex tableName="payment_transaction" indexName="to_account_payment_transaction">
+            <column name="to_account" />
+        </createIndex>
     </changeSet>
     <changeSet author="jonck" id="create_offset_table">
-        <createTable tableName="offset">
-            <column name="id" type="BIGSERIAL" autoIncrement="true" startWith="1">
-                <constraints primaryKey="true" primaryKeyName="offset_pk"/>
-            </column>
+        <!-- Offset is a reserved keyword, hence adding the table bit -->
+        <createTable tableName="offset_table">
             <column name="account" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -51,6 +55,10 @@
                 <constraints nullable="false" />
             </column>
         </createTable>
-        <addForeignKeyConstraint baseColumnNames="transaction_id" baseTableName="offset" constraintName="offset_transaction_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_transaction"/>
+        <addPrimaryKey tableName="offset_table" columnNames="account" />
+        <addForeignKeyConstraint baseColumnNames="transaction_id" baseTableName="offset_table" constraintName="offset_transaction_id" deferrable="false" initiallyDeferred="false" onDelete="CASCADE" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="payment_transaction"/>
+        <createIndex tableName="offset_table" indexName="transaction_id_offset_table">
+            <column name="transaction_id" />
+        </createIndex>
     </changeSet>
 </databaseChangeLog>

@@ -5,16 +5,12 @@ import io.r2dbc.postgresql.PostgresqlConnectionFactory;
 import io.r2dbc.spi.ConnectionFactory;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.liquibase.LiquibaseDataSource;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import project.green.util.YamlPropertySourceFactory;
-
-import javax.sql.DataSource;
 
 @Slf4j
 @Setter
@@ -30,19 +26,19 @@ public class DatasourceConfiguration extends AbstractR2dbcConfiguration {
     private String password;
     private String database;
     private String driverClassName;
-
-    @LiquibaseDataSource
-    @Bean
-    public DataSource dataSource() {
-        var dataSourceBuilder = DataSourceBuilder.create();
-        // jdbc:postgresql://<host>:<port>>/<database>
-        dataSourceBuilder.url(String.format("jdbc:postgresql://%s:%d/%s", host, port, database));
-        dataSourceBuilder.driverClassName(driverClassName);
-        dataSourceBuilder.username(username);
-        dataSourceBuilder.password(password);
-
-        return dataSourceBuilder.build();
-    }
+//
+//    @LiquibaseDataSource
+//    @Bean
+//    public DataSource dataSource() {
+//        var dataSourceBuilder = DataSourceBuilder.create();
+//        // jdbc:postgresql://<host>:<port>>/<database>
+//        dataSourceBuilder.url(String.format("jdbc:postgresql://%s:%d/%s", host, port, database));
+//        dataSourceBuilder.driverClassName(driverClassName);
+//        dataSourceBuilder.username(username);
+//        dataSourceBuilder.password(password);
+//
+//        return dataSourceBuilder.build();
+//    }
 
     @Bean(name = CONNECTION_FACTORY)
     @Override

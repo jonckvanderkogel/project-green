@@ -18,6 +18,9 @@ spring:
               default:
                 type: project.green.kafka.payments.PaymentEvent
   liquibase:
+    url: jdbc:postgresql://localhost:5432/green
+    user: user
+    password: pass
     change-log: classpath:db/changelog.xml
 
 payments:

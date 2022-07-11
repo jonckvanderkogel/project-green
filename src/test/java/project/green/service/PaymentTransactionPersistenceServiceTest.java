@@ -12,27 +12,28 @@ import reactor.test.StepVerifier;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
-import static project.green.support.HashingSupport.hashingService;
+import static org.mockito.Mockito.mock;
 import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
+import static project.green.support.HashingSupport.hashingService;
 
 public class PaymentTransactionPersistenceServiceTest {
     @Test
     public void previousBlockHashShouldBeGenesisIfFirstPaymentEvent() {
-        PaymentTransactionRepository repo = Mockito.mock(PaymentTransactionRepository.class);
+        PaymentTransactionRepository paymentTransactionRepository = mock(PaymentTransactionRepository.class);
         PaymentTransactionFactory factory = new PaymentTransactionFactory(hashingService());
         Flux<PaymentEvent> flux = Flux.just(generatePaymentEvent());
 
         Mockito
-            .when(repo
+            .when(paymentTransactionRepository
                 .findFirstByFromAccountOrderByIdDesc(anyString())
             )
             .thenReturn(Mono.empty());
 
         Mockito
-            .when(repo.save(any(PaymentTransaction.class)))
+            .when(paymentTransactionRepository.save(any(PaymentTransaction.class)))
             .thenAnswer(invocation -> Mono.just(invocation.getArguments()[0]));
 
-        PaymentTransactionPersistenceService service = new PaymentTransactionPersistenceService(repo, factory, flux);
+        PaymentTransactionPersistenceService service = new PaymentTransactionPersistenceService(paymentTransactionRepository, factory, flux);
 
         StepVerifier
             .create(service.handlePaymentEvents())
@@ -43,7 +44,7 @@ public class PaymentTransactionPersistenceServiceTest {
 
     @Test
     public void previousBlockHashShouldMatchWhenNonGenesis() {
-        PaymentTransactionRepository repo = Mockito.mock(PaymentTransactionRepository.class);
+        PaymentTransactionRepository paymentTransactionRepository = mock(PaymentTransactionRepository.class);
         PaymentTransactionFactory factory = new PaymentTransactionFactory(hashingService());
 
         PaymentEvent paymentEvent1 = generatePaymentEvent();
@@ -55,16 +56,16 @@ public class PaymentTransactionPersistenceServiceTest {
         Flux<PaymentEvent> flux = Flux.just(paymentEvent2);
 
         Mockito
-            .when(repo
+            .when(paymentTransactionRepository
                 .findFirstByFromAccountOrderByIdDesc(anyString())
             )
             .thenReturn(Mono.just(paymentTransaction1));
 
         Mockito
-            .when(repo.save(any(PaymentTransaction.class)))
+            .when(paymentTransactionRepository.save(any(PaymentTransaction.class)))
             .thenAnswer(invocation -> Mono.just(invocation.getArguments()[0]));
 
-        PaymentTransactionPersistenceService service = new PaymentTransactionPersistenceService(repo, factory, flux);
+        PaymentTransactionPersistenceService service = new PaymentTransactionPersistenceService(paymentTransactionRepository, factory, flux);
 
         StepVerifier
             .create(service.handlePaymentEvents())

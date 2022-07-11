@@ -39,4 +39,6 @@ public class PaymentTransactionPersistenceService {
             .defaultIfEmpty(paymentTransactionFactory.createPaymentTransaction(paymentEvent))
             .flatMap(paymentTransactionRepository::save);
     }
+
+
 }

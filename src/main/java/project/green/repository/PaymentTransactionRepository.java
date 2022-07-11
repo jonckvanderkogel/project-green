@@ -6,6 +6,6 @@ import project.green.entity.PaymentTransaction;
 import reactor.core.publisher.Mono;
 
 @Repository
-public interface PaymentTransactionRepository extends ReactiveCrudRepository<PaymentTransaction, Long> {
+public interface PaymentTransactionRepository extends ReactiveCrudRepository<PaymentTransaction, Long>, EntityTemplatePaymentTransactionRepository {
     Mono<PaymentTransaction> findFirstByFromAccountOrderByIdDesc(String fromAccount);
 }
