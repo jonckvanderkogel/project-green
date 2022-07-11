@@ -2,7 +2,6 @@ package project.green.entity;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import project.green.domain.GenesisBlock;
 import project.green.kafka.payments.PaymentEvent;
 import project.green.service.HashingService;
 

@@ -1,7 +1,7 @@
 package project.green.repository;
 
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import project.green.domain.Currency;
+import project.green.entity.Currency;
 import project.green.entity.PaymentTransaction;
 import reactor.core.publisher.Flux;
 

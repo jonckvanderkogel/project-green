@@ -1,4 +1,4 @@
-package project.green.domain;
+package project.green.entity;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;

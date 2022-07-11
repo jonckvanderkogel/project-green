@@ -11,7 +11,7 @@ import reactor.test.StepVerifier;
 
 import java.util.stream.IntStream;
 
-import static project.green.domain.Currency.EUR;
+import static project.green.entity.Currency.EUR;
 import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
 
 public class PaymentKafkaConsumerConfigTest {

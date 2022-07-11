@@ -2,7 +2,7 @@ package project.green.kafka.payments;
 
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
-import project.green.domain.Currency;
+import project.green.entity.Currency;
 import project.green.kafka.constraints.ValidIBAN;
 
 import javax.validation.constraints.Min;

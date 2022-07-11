@@ -4,9 +4,9 @@ import project.green.configuration.SecurityConfiguration;
 import project.green.service.HashingService;
 
 public class HashingSupport {
-    private static final SecurityConfiguration securityConfiguration = new SecurityConfiguration();
+    private static final SecurityConfiguration SECURITY_CONFIGURATION = new SecurityConfiguration();
 
     public static HashingService hashingService() {
-        return securityConfiguration.hashingService(securityConfiguration.messageDigestSupplier());
+        return SECURITY_CONFIGURATION.hashingService(SECURITY_CONFIGURATION.messageDigestSupplier());
     }
 }

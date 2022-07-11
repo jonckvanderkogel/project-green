@@ -11,7 +11,7 @@ import java.util.SplittableRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static project.green.domain.Currency.EUR;
+import static project.green.entity.Currency.EUR;
 
 public class PaymentEventSupport {
     private static final Faker FAKER = new Faker();
@@ -52,6 +52,12 @@ public class PaymentEventSupport {
                 .bankCode("INGB")
                 .buildRandom()
                 .toString(),
+            trimToMax255(FAKER.name().fullName())
+        );
+    }
+
+    public static PaymentEvent generatePaymentEvent(String fromAccount) {
+        return generatePaymentEvent(fromAccount,
             trimToMax255(FAKER.name().fullName())
         );
     }

@@ -1,5 +1,6 @@
-package project.green.domain;
+package project.green.entity;
 
+import project.green.entity.GenesisBlock;
 import project.green.service.HashingService;
 import org.junit.jupiter.api.Test;
 

@@ -2,7 +2,6 @@ package project.green.entity;
 
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import project.green.domain.GenesisBlock;
 import project.green.kafka.payments.PaymentEvent;
 import project.green.service.HashingService;
 
@@ -13,7 +12,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static project.green.domain.Currency.EUR;
+import static project.green.entity.Currency.EUR;
 import static project.green.support.HashingSupport.hashingService;
 import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
 
