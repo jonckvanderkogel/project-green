@@ -26,9 +26,9 @@ This will return all the messages up to that point and place an offset marker in
 will only fetch any new transactions that might have been generated. Look in project.green.simulation.SimulationProvider
 to see for which IBAN nrs the simulation is running for.
 
-In case you don't have the KEYSTORE_PASSWORD, you can either use the keystore from test/resources or create your own:
-
 ### Creating signing.p12
+In case you don't have the KEYSTORE_PASSWORD, you can either use the keystore from test/resources or create your own.
+
 Create JKS:
 ```
 keytool -genkey -alias greenSigningKey -keyalg RSA -keystore signing.jks -validity 1825
