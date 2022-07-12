@@ -8,9 +8,12 @@ import project.green.entity.PaymentTransactionFactory;
 import project.green.repository.OffsetRepository;
 import project.green.repository.PaymentTransactionRepository;
 import project.green.support.HashingSupport;
+import project.green.support.SecuritySupport;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
+
+import java.nio.charset.StandardCharsets;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -22,11 +25,11 @@ public class PaymentTransactionFetchingServiceTest {
 
     @Test
     public void lastPaymentTransactionIdStreamedShouldBeStoredAsOffset() {
-
         PaymentTransactionRepository paymentTransactionRepository = mock(PaymentTransactionRepository.class);
         OffsetRepository offsetRepository = mock(OffsetRepository.class);
+        SigningService signingService = new SigningService(SecuritySupport.getSigningSignatureSupplier(), SecuritySupport.getVerificationSignatureSupplier());
 
-        PaymentTransactionFetchingService service = new PaymentTransactionFetchingService(paymentTransactionRepository, offsetRepository);
+        PaymentTransactionFetchingService service = new PaymentTransactionFetchingService(paymentTransactionRepository, offsetRepository, signingService);
 
         Mockito
             .when(paymentTransactionRepository.findByAccount("NL24INGB8196349335"))
@@ -43,6 +46,32 @@ public class PaymentTransactionFetchingServiceTest {
             .verify();
 
         Mockito.verify(offsetRepository).save("NL24INGB8196349335", 10L);
+    }
+
+    @Test
+    public void signatureShouldMatchBlockHash() {
+        PaymentTransactionRepository paymentTransactionRepository = mock(PaymentTransactionRepository.class);
+        OffsetRepository offsetRepository = mock(OffsetRepository.class);
+        SigningService signingService = new SigningService(SecuritySupport.getSigningSignatureSupplier(), SecuritySupport.getVerificationSignatureSupplier());
+
+        PaymentTransactionFetchingService service = new PaymentTransactionFetchingService(paymentTransactionRepository, offsetRepository, signingService);
+
+        Mockito
+            .when(paymentTransactionRepository.findByAccount("NL24INGB8196349335"))
+            .thenReturn(generatePaymentTransactionFlux("NL24INGB8196349335"));
+
+        Mockito
+            .when(offsetRepository.save(anyString(), anyLong()))
+            .thenReturn(Mono.empty());
+
+        StepVerifier
+            .create(service.fetchPaymentTransactions("NL24INGB8196349335"))
+            .expectNextMatches(p -> signingService.verify(
+                p.getPaymentTransaction().getBlockHash().getBytes(StandardCharsets.UTF_8),
+                p.getSignature()))
+            .expectNextCount(9L)
+            .expectComplete()
+            .verify();
     }
 
     private Flux<PaymentTransaction> generatePaymentTransactionFlux(String account) {

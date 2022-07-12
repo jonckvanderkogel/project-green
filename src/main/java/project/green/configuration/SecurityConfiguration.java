@@ -62,12 +62,27 @@ public class SecurityConfiguration {
         };
     }
 
-    @Bean
-    public Supplier<Signature> signatureSupplier() {
+    @Bean(name = "signingSignatureSupplier")
+    public Supplier<Signature> signingSignatureSupplier(@Autowired PrivateKey privateKey) {
         return () -> {
             try {
-                return Signature.getInstance("SHA256WithRSA");
-            } catch (NoSuchAlgorithmException e) {
+                Signature signature = Signature.getInstance("SHA256WithRSA");
+                signature.initSign(privateKey);
+                return signature;
+            } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+                throw new RuntimeException(e);
+            }
+        };
+    }
+
+    @Bean(name = "verificationSignatureSupplier")
+    public Supplier<Signature> verificationSignatureSupplier(@Autowired PublicKey publicKey) {
+        return () -> {
+            try {
+                Signature signature = Signature.getInstance("SHA256WithRSA");
+                signature.initVerify(publicKey);
+                return signature;
+            } catch (NoSuchAlgorithmException | InvalidKeyException e) {
                 throw new RuntimeException(e);
             }
         };
