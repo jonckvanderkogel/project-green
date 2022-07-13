@@ -35,14 +35,14 @@ public class SigningService {
         }
     }
 
-    public boolean verify(byte[] message, String encodedSignature) {
+    public Mono<Boolean> verify(byte[] message, String encodedSignature) {
         byte[] decodedSignature = DECODER.decode(encodedSignature);
         Signature signature = verificationSignatureSupplier.get();
         try {
             signature.update(message);
-            return signature.verify(decodedSignature);
+            return Mono.just(signature.verify(decodedSignature));
         } catch (SignatureException e) {
-            throw new RuntimeException(e);
+            return Mono.error(e);
         }
     }
 }

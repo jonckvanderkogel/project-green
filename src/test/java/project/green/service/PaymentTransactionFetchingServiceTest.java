@@ -65,10 +65,11 @@ public class PaymentTransactionFetchingServiceTest {
             .thenReturn(Mono.empty());
 
         StepVerifier
-            .create(service.fetchPaymentTransactions("NL24INGB8196349335"))
-            .expectNextMatches(p -> signingService.verify(
-                p.getPaymentTransaction().getBlockHash().getBytes(StandardCharsets.UTF_8),
-                p.getSignature()))
+            .create(service.fetchPaymentTransactions("NL24INGB8196349335")
+                .flatMap(p -> signingService.verify(
+                    p.getPaymentTransaction().getBlockHash().getBytes(StandardCharsets.UTF_8),
+                    p.getSignature())))
+            .expectNextMatches(b -> b)
             .expectNextCount(9L)
             .expectComplete()
             .verify();

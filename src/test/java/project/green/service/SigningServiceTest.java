@@ -19,8 +19,9 @@ public class SigningServiceTest {
         String message = "message";
 
         StepVerifier
-            .create(signingService.sign(message.getBytes(StandardCharsets.UTF_8)))
-            .expectNextMatches(sig -> !signingService.verify("foo".getBytes(StandardCharsets.UTF_8), sig))
+            .create(signingService.sign(message.getBytes(StandardCharsets.UTF_8))
+                .flatMap(sig -> signingService.verify("foo".getBytes(StandardCharsets.UTF_8), sig)))
+            .expectNextMatches(b -> !b)
             .expectComplete()
             .verify();
     }
@@ -34,8 +35,9 @@ public class SigningServiceTest {
         byte[] messageBytes = "message".getBytes(StandardCharsets.UTF_8);
 
         StepVerifier
-            .create(signingService.sign(messageBytes))
-            .expectNextMatches(sig -> signingService.verify(messageBytes, sig))
+            .create(signingService.sign(messageBytes)
+                .flatMap(sig -> signingService.verify(messageBytes, sig)))
+            .expectNextMatches(b -> b)
             .expectComplete()
             .verify();
     }
