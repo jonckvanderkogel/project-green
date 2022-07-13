@@ -25,7 +25,10 @@ public class PaymentTransactionFetchingService {
     public Flux<PaymentTransactionDTO> fetchPaymentTransactions(String account) {
         Flux<PaymentTransactionDTO> paymentTransactionFlux = paymentTransactionRepository
             .findByAccount(account)
-            .map(pt -> new PaymentTransactionDTO(pt, signingService.sign(pt.getBlockHash().getBytes(StandardCharsets.UTF_8))))
+            .flatMap(pt -> signingService
+                .sign(pt.getBlockHash().getBytes(StandardCharsets.UTF_8))
+                .map(signature -> new PaymentTransactionDTO(pt, signature))
+            )
             .share();
 
         paymentTransactionFlux

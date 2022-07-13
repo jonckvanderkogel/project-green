@@ -3,6 +3,7 @@ package project.green.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.security.Signature;
 import java.security.SignatureException;
@@ -24,13 +25,13 @@ public class SigningService {
         this.verificationSignatureSupplier = verificationSignatureSupplier;
     }
 
-    public String sign(byte[] message) {
+    public Mono<String> sign(byte[] message) {
         Signature signature = signingSignatureSupplier.get();
         try {
             signature.update(message);
-            return ENCODER.encodeToString(signature.sign());
+            return Mono.just(ENCODER.encodeToString(signature.sign()));
         } catch (SignatureException e) {
-            throw new RuntimeException(e);
+            return Mono.error(e);
         }
     }
 

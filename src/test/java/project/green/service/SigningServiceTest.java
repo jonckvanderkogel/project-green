@@ -2,14 +2,11 @@ package project.green.service;
 
 import org.junit.jupiter.api.Test;
 import project.green.support.SecuritySupport;
+import reactor.test.StepVerifier;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Signature;
-import java.security.SignatureException;
 import java.util.function.Supplier;
-
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SigningServiceTest {
 
@@ -21,8 +18,11 @@ public class SigningServiceTest {
 
         String message = "message";
 
-        String encodedSignature = signingService.sign(message.getBytes(StandardCharsets.UTF_8));
-        assertFalse(signingService.verify("foo".getBytes(StandardCharsets.UTF_8), encodedSignature));
+        StepVerifier
+            .create(signingService.sign(message.getBytes(StandardCharsets.UTF_8)))
+            .expectNextMatches(sig -> !signingService.verify("foo".getBytes(StandardCharsets.UTF_8), sig))
+            .expectComplete()
+            .verify();
     }
 
     @Test
@@ -33,7 +33,10 @@ public class SigningServiceTest {
 
         byte[] messageBytes = "message".getBytes(StandardCharsets.UTF_8);
 
-        String encodedSignature = signingService.sign(messageBytes);
-        assertTrue(signingService.verify(messageBytes, encodedSignature));
+        StepVerifier
+            .create(signingService.sign(messageBytes))
+            .expectNextMatches(sig -> signingService.verify(messageBytes, sig))
+            .expectComplete()
+            .verify();
     }
 }
