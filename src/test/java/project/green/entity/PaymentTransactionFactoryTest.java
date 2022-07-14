@@ -3,6 +3,7 @@ package project.green.entity;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import project.green.kafka.payments.PaymentEvent;
+import project.green.kafka.payments.PaymentEventWithPerspective;
 import project.green.service.HashingService;
 
 import java.nio.charset.StandardCharsets;
@@ -13,8 +14,9 @@ import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static project.green.entity.Currency.EUR;
-import static project.green.support.HashingSupport.hashingService;
 import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
+import static project.green.simulation.PaymentEventSupport.generatePaymentEventWithPerspective;
+import static project.green.support.HashingSupport.hashingService;
 
 @Slf4j
 public class PaymentTransactionFactoryTest {
@@ -24,9 +26,9 @@ public class PaymentTransactionFactoryTest {
     public void nextPaymentTransactionHasPreviousBlockHash() {
         PaymentTransactionFactory factory = new PaymentTransactionFactory(hashingService());
 
-        PaymentTransaction firstTransaction = factory.createPaymentTransaction(generatePaymentEvent());
-        PaymentTransaction secondTransaction = factory.createPaymentTransaction(generatePaymentEvent(), firstTransaction);
-        PaymentTransaction thirdTransaction = factory.createPaymentTransaction(generatePaymentEvent(), secondTransaction);
+        PaymentTransaction firstTransaction = factory.createPaymentTransaction(generatePaymentEventWithPerspective());
+        PaymentTransaction secondTransaction = factory.createPaymentTransaction(generatePaymentEventWithPerspective(), firstTransaction);
+        PaymentTransaction thirdTransaction = factory.createPaymentTransaction(generatePaymentEventWithPerspective(), secondTransaction);
 
         assertEquals(GenesisBlock.INSTANCE.blockHash(), firstTransaction.getPreviousBlockHash());
         assertEquals(firstTransaction.blockHash(), secondTransaction.getPreviousBlockHash());
@@ -38,20 +40,25 @@ public class PaymentTransactionFactoryTest {
         HashingService hashingService = hashingService();
         PaymentTransactionFactory factory = new PaymentTransactionFactory(hashingService);
 
-        PaymentEvent paymentEvent = new PaymentEvent(
-            "NL39INGB1897063432",
-            "NL29INGB7591500313",
-            "Trisha Funk",
-            "Therese Greenholt PhD",
-            100d,
-            EUR,
-            ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 17, 2), ZoneId.of("GMT+01:00")),
-            "message",
-            "12345",
-            "extraDescription"
+
+        PaymentEventWithPerspective paymentEvent = new PaymentEventWithPerspective(
+            new PaymentEvent(
+                "NL39INGB1897063432",
+                "NL29INGB7591500313",
+                "Trisha Funk",
+                "Therese Greenholt PhD",
+                100d,
+                EUR,
+                ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 17, 2), ZoneId.of("GMT+01:00")),
+                "message",
+                "12345",
+                "extraDescription"
+            ),
+            "NL39INGB1897063432"
         );
 
         String concatenatedHashes = hashingService.hash("NL39INGB1897063432".getBytes(StandardCharsets.UTF_8))
+            .concat(hashingService.hash("NL39INGB1897063432".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("NL29INGB7591500313".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("Trisha Funk".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("Therese Greenholt PhD".getBytes(StandardCharsets.UTF_8)))
@@ -74,24 +81,32 @@ public class PaymentTransactionFactoryTest {
         PaymentTransactionFactory factory = new PaymentTransactionFactory(hashingService);
 
         PaymentEvent paymentEvent1 = generatePaymentEvent();
-
-        PaymentEvent paymentEvent2 = new PaymentEvent(
-            "NL39INGB1897063432",
-            "NL77INGB7224894642",
-            "Trisha Funk",
-            "Gandalf",
-            150d,
-            EUR,
-            ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 18, 4), ZoneId.of("GMT+01:00")),
-            "messageTwo",
-            "123456",
-            "extraDescription2"
+        PaymentEventWithPerspective paymentEventWithPerspective1 = new PaymentEventWithPerspective(
+            paymentEvent1,
+            paymentEvent1.getFromAccount()
         );
 
-        PaymentTransaction paymentTransaction1 = factory.createPaymentTransaction(paymentEvent1);
-        PaymentTransaction paymentTransaction2 = factory.createPaymentTransaction(paymentEvent2, paymentTransaction1);
+        PaymentEventWithPerspective paymentEventWithPerspective2 = new PaymentEventWithPerspective(
+            new PaymentEvent(
+                "NL39INGB1897063432",
+                "NL77INGB7224894642",
+                "Trisha Funk",
+                "Gandalf",
+                150d,
+                EUR,
+                ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 18, 4), ZoneId.of("GMT+01:00")),
+                "messageTwo",
+                "123456",
+                "extraDescription2"
+            ),
+            "NL39INGB1897063432"
+        );
+
+        PaymentTransaction paymentTransaction1 = factory.createPaymentTransaction(paymentEventWithPerspective1);
+        PaymentTransaction paymentTransaction2 = factory.createPaymentTransaction(paymentEventWithPerspective2, paymentTransaction1);
 
         String concatenatedHashes = hashingService.hash("NL39INGB1897063432".getBytes(StandardCharsets.UTF_8))
+            .concat(hashingService.hash("NL39INGB1897063432".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("NL77INGB7224894642".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("Trisha Funk".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("Gandalf".getBytes(StandardCharsets.UTF_8)))

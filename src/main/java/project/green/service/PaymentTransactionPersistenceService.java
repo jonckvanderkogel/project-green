@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import project.green.entity.PaymentTransaction;
 import project.green.entity.PaymentTransactionFactory;
 import project.green.kafka.payments.PaymentEvent;
+import project.green.kafka.payments.PaymentEventWithPerspective;
 import project.green.repository.PaymentTransactionRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -25,6 +26,7 @@ public class PaymentTransactionPersistenceService {
 
     public Flux<PaymentTransaction> handlePaymentEvents() {
         return paymentEventFlux
+            .flatMap(this::duplicateWithPerspective)
             .flatMap(this::persistPaymentEvent);
     }
 
@@ -32,13 +34,21 @@ public class PaymentTransactionPersistenceService {
         isolation = Isolation.READ_COMMITTED,
         timeout = 5
     )
-    public Mono<PaymentTransaction> persistPaymentEvent(PaymentEvent paymentEvent) {
+    public Mono<PaymentTransaction> persistPaymentEvent(PaymentEventWithPerspective paymentEvent) {
         return paymentTransactionRepository
-            .findFirstByFromAccountOrderByIdDesc(paymentEvent.getFromAccount())
+            .findFirstByPerspectiveAccountOrderByIdDesc(paymentEvent.getPerspectiveAccount())
             .map(previousTransaction -> paymentTransactionFactory.createPaymentTransaction(paymentEvent, previousTransaction))
             .defaultIfEmpty(paymentTransactionFactory.createPaymentTransaction(paymentEvent))
             .flatMap(paymentTransactionRepository::save);
     }
 
+
+
+    private Flux<PaymentEventWithPerspective> duplicateWithPerspective(PaymentEvent origin) {
+        return Flux.just(
+            new PaymentEventWithPerspective(origin, origin.getFromAccount()),
+            new PaymentEventWithPerspective(origin, origin.getToAccount())
+        );
+    }
 
 }

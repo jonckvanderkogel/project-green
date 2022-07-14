@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import project.green.entity.PaymentTransaction;
 import project.green.entity.PaymentTransactionFactory;
+import project.green.kafka.payments.PaymentEventWithPerspective;
 import project.green.repository.OffsetRepository;
 import project.green.repository.PaymentTransactionRepository;
 import project.green.support.HashingSupport;
@@ -18,7 +19,7 @@ import java.nio.charset.StandardCharsets;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
-import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
+import static project.green.simulation.PaymentEventSupport.generatePaymentEventWithPerspective;
 
 public class PaymentTransactionFetchingServiceTest {
     private final PaymentTransactionFactory paymentTransactionFactory = new PaymentTransactionFactory(HashingSupport.hashingService());
@@ -76,7 +77,9 @@ public class PaymentTransactionFetchingServiceTest {
     }
 
     private Flux<PaymentTransaction> generatePaymentTransactionFlux(String account) {
-        PaymentTransaction genesis = paymentTransactionFactory.createPaymentTransaction(generatePaymentEvent(account));
+        PaymentEventWithPerspective paymentEvent = generatePaymentEventWithPerspective(account);
+
+        PaymentTransaction genesis = paymentTransactionFactory.createPaymentTransaction(paymentEvent);
         genesis.setId(1L);
         return Flux.fromIterable(generatePaymentTransactions(List.of(genesis)));
     }
@@ -86,7 +89,7 @@ public class PaymentTransactionFetchingServiceTest {
             return accumulator;
         } else {
             PaymentTransaction last = accumulator.last();
-            PaymentTransaction newTransaction = paymentTransactionFactory.createPaymentTransaction(generatePaymentEvent(last.getFromAccount()), last);
+            PaymentTransaction newTransaction = paymentTransactionFactory.createPaymentTransaction(generatePaymentEventWithPerspective(last.getFromAccount()), last);
             newTransaction.setId(last.getId() + 1);
             return generatePaymentTransactions(accumulator.append(newTransaction));
         }

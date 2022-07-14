@@ -2,7 +2,7 @@ package project.green.entity;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import project.green.kafka.payments.PaymentEvent;
+import project.green.kafka.payments.PaymentEventWithPerspective;
 import project.green.service.HashingService;
 
 import java.nio.charset.StandardCharsets;
@@ -16,11 +16,12 @@ import java.util.stream.Collectors;
 public class PaymentTransactionFactory {
     private final HashingService hashingService;
     private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
-    private final static List<Function<PaymentEvent, Byte[]>> PAYMENT_BYTE_FUN = List.of(
+    private final static List<Function<PaymentEventWithPerspective, Byte[]>> PAYMENT_BYTE_FUN = List.of(
+        (pe) -> fromPrimByteArray(pe.getPerspectiveAccount().getBytes(StandardCharsets.UTF_8)),
         (pe) -> fromPrimByteArray(pe.getFromAccount().getBytes(StandardCharsets.UTF_8)),
         (pe) -> fromPrimByteArray(pe.getToAccount().getBytes(StandardCharsets.UTF_8)),
-        (pe) -> fromPrimByteArray(pe.getNameFrom().getBytes(StandardCharsets.UTF_8)),
-        (pe) -> fromPrimByteArray(pe.getNameTo().getBytes(StandardCharsets.UTF_8)),
+        (pe) -> fromPrimByteArray(pe.getFromName().getBytes(StandardCharsets.UTF_8)),
+        (pe) -> fromPrimByteArray(pe.getToName().getBytes(StandardCharsets.UTF_8)),
         (pe) -> new Byte[]{pe.getValue().byteValue()},
         (pe) -> fromPrimByteArray(pe.getCurrency().toString().getBytes(StandardCharsets.UTF_8)),
         (pe) -> fromPrimByteArray(pe.getTransactionDateTime().format(FORMATTER).getBytes(StandardCharsets.UTF_8)),
@@ -43,17 +44,17 @@ public class PaymentTransactionFactory {
         return byteObjects;
     }
 
-    public PaymentTransaction createPaymentTransaction(PaymentEvent paymentEvent) {
+    public PaymentTransaction createPaymentTransaction(PaymentEventWithPerspective paymentEvent) {
         return createPaymentTransaction(paymentEvent, GENESIS);
     }
 
-    public PaymentTransaction createPaymentTransaction(PaymentEvent paymentEvent, PaymentTransaction previousPaymentTransaction) {
-
+    public PaymentTransaction createPaymentTransaction(PaymentEventWithPerspective paymentEvent, PaymentTransaction previousPaymentTransaction) {
         return PaymentTransaction.builder()
+            .perspectiveAccount(paymentEvent.getPerspectiveAccount())
             .fromAccount(paymentEvent.getFromAccount())
             .toAccount(paymentEvent.getToAccount())
-            .nameFrom(paymentEvent.getNameFrom())
-            .nameTo(paymentEvent.getNameTo())
+            .fromName(paymentEvent.getFromName())
+            .toName(paymentEvent.getToName())
             .value(paymentEvent.getValue())
             .currency(paymentEvent.getCurrency())
             .transactionDateTime(paymentEvent.getTransactionDateTime())
@@ -65,7 +66,7 @@ public class PaymentTransactionFactory {
             .build();
     }
 
-    private String calculateBlockHash(PaymentEvent paymentEvent, PaymentTransaction previousPaymentTransaction) {
+    private String calculateBlockHash(PaymentEventWithPerspective paymentEvent, PaymentTransaction previousPaymentTransaction) {
         String concatenatedHashes = PAYMENT_BYTE_FUN.stream()
             .map(fun -> hashingService.hash(fun.apply(paymentEvent)))
             .collect(Collectors.joining())

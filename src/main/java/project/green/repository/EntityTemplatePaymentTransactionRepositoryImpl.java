@@ -16,10 +16,11 @@ public record EntityTemplatePaymentTransactionRepositoryImpl(R2dbcEntityTemplate
                 """
                         SELECT
                             id,
+                            perspective_account,
                             from_account,
                             to_account,
-                            name_from,
-                            name_to,
+                            from_name,
+                            to_name,
                             value,
                             currency,
                             transaction_date_time,
@@ -30,10 +31,7 @@ public record EntityTemplatePaymentTransactionRepositoryImpl(R2dbcEntityTemplate
                             previous_block_hash
                         FROM
                             payment_transaction
-                        WHERE
-                            (
-                                from_account=$1
-                            OR  to_account=$1)
+                        WHERE perspective_account=$1
                         AND id >
                             (   SELECT
                                     COALESCE(MAX(transaction_id), 0) AS tr_id
@@ -41,6 +39,7 @@ public record EntityTemplatePaymentTransactionRepositoryImpl(R2dbcEntityTemplate
                                     offset_table
                                 WHERE
                                     account=$1)
+                        ORDER BY id
                     """
             )
             .bind("$1", account)
@@ -52,10 +51,11 @@ public record EntityTemplatePaymentTransactionRepositoryImpl(R2dbcEntityTemplate
     private PaymentTransaction constructPaymentTransaction(Map<String, Object> data) {
         return PaymentTransaction.builder()
             .id((Long) data.get("id"))
+            .perspectiveAccount((String) data.get("perspective_account"))
             .fromAccount((String) data.get("from_account"))
             .toAccount((String) data.get("to_account"))
-            .nameFrom((String) data.get("name_from"))
-            .nameTo((String) data.get("name_to"))
+            .fromName((String) data.get("from_name"))
+            .toName((String) data.get("to_name"))
             .value((Double) data.get("value"))
             .currency(Currency.valueOf((String) data.get("currency")))
             .transactionDateTime(((OffsetDateTime) data.get("transaction_date_time")).toZonedDateTime())

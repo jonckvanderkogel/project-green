@@ -7,16 +7,19 @@
             <column name="id" type="BIGSERIAL" autoIncrement="true" startWith="1">
                 <constraints primaryKey="true" primaryKeyName="payment_transaction_pk"/>
             </column>
+            <column name="perspective_account" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
             <column name="from_account" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="to_account" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="name_from" type="VARCHAR(255)">
+            <column name="from_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="name_to" type="VARCHAR(255)">
+            <column name="to_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
             <column name="value" type="double precision">
@@ -38,6 +41,9 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+        <createIndex tableName="payment_transaction" indexName="perspective_account_payment_transaction">
+            <column name="perspective_account" />
+        </createIndex>
         <createIndex tableName="payment_transaction" indexName="from_account_payment_transaction">
             <column name="from_account" />
         </createIndex>

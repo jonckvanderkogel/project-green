@@ -15,10 +15,11 @@ import java.time.ZonedDateTime;
 public class PaymentTransaction implements Block {
     @Id
     private Long id;
+    private String perspectiveAccount;
     private String fromAccount;
     private String toAccount;
-    private String nameFrom;
-    private String nameTo;
+    private String fromName;
+    private String toName;
     private Double value;
     private Currency currency;
     private ZonedDateTime transactionDateTime;

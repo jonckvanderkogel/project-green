@@ -7,5 +7,5 @@ import reactor.core.publisher.Mono;
 
 @Repository
 public interface PaymentTransactionRepository extends ReactiveCrudRepository<PaymentTransaction, Long>, EntityTemplatePaymentTransactionRepository {
-    Mono<PaymentTransaction> findFirstByFromAccountOrderByIdDesc(String fromAccount);
+    Mono<PaymentTransaction> findFirstByPerspectiveAccountOrderByIdDesc(String perspectiveAccount);
 }

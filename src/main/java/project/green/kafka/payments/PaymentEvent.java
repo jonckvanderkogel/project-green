@@ -24,11 +24,11 @@ public class PaymentEvent {
 
     @Length(max = 255)
     @NotEmpty
-    private String nameFrom;
+    private String fromName;
 
     @Length(max = 255)
     @NotEmpty
-    private String nameTo;
+    private String toName;
 
     @Min(0)
     @NotNull

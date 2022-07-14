@@ -1,21 +1,23 @@
 package project.green.service;
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import project.green.entity.PaymentTransaction;
 import project.green.entity.PaymentTransactionFactory;
 import project.green.kafka.payments.PaymentEvent;
+import project.green.kafka.payments.PaymentEventWithPerspective;
 import project.green.repository.PaymentTransactionRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
-import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
+import static project.green.simulation.PaymentEventSupport.*;
 import static project.green.support.HashingSupport.hashingService;
 
+@Slf4j
 public class PaymentTransactionPersistenceServiceTest {
     @Test
     public void previousBlockHashShouldBeGenesisIfFirstPaymentEvent() {
@@ -25,7 +27,7 @@ public class PaymentTransactionPersistenceServiceTest {
 
         Mockito
             .when(paymentTransactionRepository
-                .findFirstByFromAccountOrderByIdDesc(anyString())
+                .findFirstByPerspectiveAccountOrderByIdDesc(anyString())
             )
             .thenReturn(Mono.empty());
 
@@ -35,8 +37,11 @@ public class PaymentTransactionPersistenceServiceTest {
 
         PaymentTransactionPersistenceService service = new PaymentTransactionPersistenceService(paymentTransactionRepository, factory, flux);
 
+        // Both the generated paymentEventsWithPerspective should have genesis as it's previous block hash since
+        // they both from their own chain from the customers' perspective.
         StepVerifier
             .create(service.handlePaymentEvents())
+            .expectNextMatches(p -> p.getPreviousBlockHash().equals("c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b"))
             .expectNextMatches(p -> p.getPreviousBlockHash().equals("c6fdd7a7f70862b36a26ccd14752268061e98103299b28fe7763bd9629926f4b"))
             .expectComplete()
             .verify();
@@ -47,19 +52,27 @@ public class PaymentTransactionPersistenceServiceTest {
         PaymentTransactionRepository paymentTransactionRepository = mock(PaymentTransactionRepository.class);
         PaymentTransactionFactory factory = new PaymentTransactionFactory(hashingService());
 
-        PaymentEvent paymentEvent1 = generatePaymentEvent();
+        PaymentEventWithPerspective paymentEvent11 = generatePaymentEventWithPerspective("NL24INGB8196349335");
+        PaymentEventWithPerspective paymentEvent12 = generatePaymentEventWithPerspective(paymentEvent11, paymentEvent11.getToAccount());
 
-        PaymentEvent paymentEvent2 = generatePaymentEvent();
+        PaymentEvent paymentEvent2 = generatePaymentEventFromToAccount(paymentEvent11.getFromAccount(), paymentEvent11.getToAccount());
 
-        PaymentTransaction paymentTransaction1 = factory.createPaymentTransaction(paymentEvent1);
+        PaymentTransaction paymentTransaction11 = factory.createPaymentTransaction(paymentEvent11);
+        PaymentTransaction paymentTransaction12 = factory.createPaymentTransaction(paymentEvent12);
 
         Flux<PaymentEvent> flux = Flux.just(paymentEvent2);
 
         Mockito
             .when(paymentTransactionRepository
-                .findFirstByFromAccountOrderByIdDesc(anyString())
+                .findFirstByPerspectiveAccountOrderByIdDesc(paymentTransaction11.getPerspectiveAccount())
             )
-            .thenReturn(Mono.just(paymentTransaction1));
+            .thenReturn(Mono.just(paymentTransaction11));
+
+        Mockito
+            .when(paymentTransactionRepository
+                .findFirstByPerspectiveAccountOrderByIdDesc(paymentTransaction12.getPerspectiveAccount())
+            )
+            .thenReturn(Mono.just(paymentTransaction12));
 
         Mockito
             .when(paymentTransactionRepository.save(any(PaymentTransaction.class)))
@@ -69,7 +82,8 @@ public class PaymentTransactionPersistenceServiceTest {
 
         StepVerifier
             .create(service.handlePaymentEvents())
-            .expectNextMatches(p -> p.getPreviousBlockHash().equals(paymentTransaction1.getBlockHash()))
+            .expectNextMatches(p -> p.getPreviousBlockHash().equals(paymentTransaction11.getBlockHash()))
+            .expectNextMatches(p -> p.getPreviousBlockHash().equals(paymentTransaction12.getBlockHash()))
             .expectComplete()
             .verify();
     }
