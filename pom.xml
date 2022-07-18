@@ -14,10 +14,10 @@
 	<name>green</name>
 	<description>The streaming backend for Project Green</description>
 	<properties>
-		<java.version>17</java.version>
+		<java.version>18</java.version>
 		<apache.commons.validator.version>1.7</apache.commons.validator.version>
-		<maven.compiler.source>17</maven.compiler.source>
-		<maven.compiler.target>17</maven.compiler.target>
+		<maven.compiler.source>18</maven.compiler.source>
+		<maven.compiler.target>18</maven.compiler.target>
 		<r2dbc.postgresql.version>0.8.12.RELEASE</r2dbc.postgresql.version>
 		<vavr.version>0.10.4</vavr.version>
 		<spring-jdbc.version>5.3.20</spring-jdbc.version>
