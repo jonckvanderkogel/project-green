@@ -12,10 +12,10 @@ import static java.lang.Boolean.TRUE;
 
 @RequiredArgsConstructor
 public class FundsStorage {
-    private final Map<String, Double> database = new HashMap<>();
+    private final Map<String, Long> database = new HashMap<>();
 
-    public Boolean checkBalanceSufficient(String accountNr, Double amountRequested) {
-        Double currentFunds = database.computeIfAbsent(accountNr, i -> 0d);
+    public Boolean checkBalanceSufficient(String accountNr, Long amountRequested) {
+        Long currentFunds = database.computeIfAbsent(accountNr, i -> 0L);
 
         return currentFunds >= amountRequested ? TRUE : FALSE;
     }
@@ -24,11 +24,11 @@ public class FundsStorage {
         return database
             .entrySet()
             .stream()
-            .map(e -> String.format("Account: %s, balance: %2$,.2f", e.getKey(), e.getValue()))
+            .map(e -> String.format("Account: %s, balance: %2$,.2f", e.getKey(), (double) e.getValue()/100))
             .collect(Collectors.joining("\n"));
     }
 
-    public void updateBalance(String accountNr, Double amount) {
-        database.merge(accountNr, amount, Double::sum);
+    public void updateBalance(String accountNr, Long amount) {
+        database.merge(accountNr, amount, Long::sum);
     }
 }

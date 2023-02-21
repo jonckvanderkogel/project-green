@@ -6,6 +6,7 @@ import project.green.entity.PaymentTransaction;
 import reactor.core.publisher.Flux;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.Map;
 
 public record EntityTemplatePaymentTransactionRepositoryImpl(R2dbcEntityTemplate template) implements EntityTemplatePaymentTransactionRepository {
@@ -56,9 +57,9 @@ public record EntityTemplatePaymentTransactionRepositoryImpl(R2dbcEntityTemplate
             .toAccount((String) data.get("to_account"))
             .fromName((String) data.get("from_name"))
             .toName((String) data.get("to_name"))
-            .value((Double) data.get("value"))
+            .value((Long) data.get("value"))
             .currency(Currency.valueOf((String) data.get("currency")))
-            .transactionDateTime(((OffsetDateTime) data.get("transaction_date_time")).toZonedDateTime())
+            .transactionDateTime(((OffsetDateTime) data.get("transaction_date_time")).toZonedDateTime().withZoneSameInstant(ZoneId.of("Europe/Paris")))
             .message((String) data.get("message"))
             .paymentReference((String) data.get("payment_reference"))
             .extraDescription((String) data.get("extra_description"))

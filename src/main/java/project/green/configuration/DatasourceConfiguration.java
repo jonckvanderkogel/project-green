@@ -4,7 +4,6 @@ import io.r2dbc.postgresql.PostgresqlConnectionConfiguration;
 import io.r2dbc.postgresql.PostgresqlConnectionFactory;
 import io.r2dbc.spi.ConnectionFactory;
 import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +11,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.r2dbc.config.AbstractR2dbcConfiguration;
 import project.green.util.YamlPropertySourceFactory;
 
-@Slf4j
 @Setter
 @Configuration
 @PropertySource(factory = YamlPropertySourceFactory.class, value = "classpath:datasource.yml")

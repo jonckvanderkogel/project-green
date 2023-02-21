@@ -1,6 +1,6 @@
 package project.green.service;
 
-import lombok.extern.slf4j.Slf4j;
+import io.vavr.Tuple2;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import project.green.entity.PaymentTransaction;
@@ -10,20 +10,21 @@ import project.green.kafka.payments.PaymentEventWithPerspective;
 import project.green.repository.PaymentTransactionRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.kafka.receiver.ReceiverOffset;
 import reactor.test.StepVerifier;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static project.green.simulation.PaymentEventSupport.*;
 import static project.green.support.HashingSupport.hashingService;
 
-@Slf4j
 public class PaymentTransactionPersistenceServiceTest {
     @Test
     public void previousBlockHashShouldBeGenesisIfFirstPaymentEvent() {
         PaymentTransactionRepository paymentTransactionRepository = mock(PaymentTransactionRepository.class);
         PaymentTransactionFactory factory = new PaymentTransactionFactory(hashingService());
-        Flux<PaymentEvent> flux = Flux.just(generatePaymentEvent());
+        Flux<Tuple2<PaymentEvent, ReceiverOffset>> flux = Flux.just(generateTuple());
 
         Mockito
             .when(paymentTransactionRepository
@@ -60,7 +61,7 @@ public class PaymentTransactionPersistenceServiceTest {
         PaymentTransaction paymentTransaction11 = factory.createPaymentTransaction(paymentEvent11);
         PaymentTransaction paymentTransaction12 = factory.createPaymentTransaction(paymentEvent12);
 
-        Flux<PaymentEvent> flux = Flux.just(paymentEvent2);
+        Flux<Tuple2<PaymentEvent, ReceiverOffset>> flux = Flux.just(new Tuple2<>(paymentEvent2, generateReceiverOffset()));
 
         Mockito
             .when(paymentTransactionRepository

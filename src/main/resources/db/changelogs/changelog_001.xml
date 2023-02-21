@@ -22,7 +22,7 @@
             <column name="to_name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="value" type="double precision">
+            <column name="value" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
             <column name="currency" type="VARCHAR(255)">

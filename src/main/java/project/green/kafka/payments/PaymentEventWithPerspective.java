@@ -1,10 +1,11 @@
 package project.green.kafka.payments;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import project.green.kafka.constraints.ValidIBAN;
+
+import java.time.ZoneId;
 
 @ToString
 @Getter
@@ -21,7 +22,7 @@ public class PaymentEventWithPerspective extends PaymentEvent {
         this.setToName(origin.getToName());
         this.setValue(origin.getValue());
         this.setCurrency(origin.getCurrency());
-        this.setTransactionDateTime(origin.getTransactionDateTime());
+        this.setTransactionDateTime(origin.getTransactionDateTime().withZoneSameInstant(ZoneId.of("Europe/Paris")));
         this.setMessage(origin.getMessage());
         this.setPaymentReference(origin.getPaymentReference());
         this.setExtraDescription(origin.getExtraDescription());

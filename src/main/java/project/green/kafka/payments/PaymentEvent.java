@@ -32,7 +32,7 @@ public class PaymentEvent {
 
     @Min(0)
     @NotNull
-    private Double value;
+    private Long value;
 
     @NotNull
     private Currency currency;

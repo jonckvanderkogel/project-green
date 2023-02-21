@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import project.green.dto.PaymentTransactionDTO;
+import project.green.dto.PaymentTransactionWrapper;
 import project.green.repository.OffsetRepository;
 import project.green.repository.PaymentTransactionRepository;
 import reactor.core.publisher.Flux;
@@ -22,22 +23,21 @@ public class PaymentTransactionFetchingService {
         isolation = Isolation.READ_COMMITTED,
         timeout = 5
     )
-    public Flux<PaymentTransactionDTO> fetchPaymentTransactions(String account) {
-        Flux<PaymentTransactionDTO> paymentTransactionFlux = paymentTransactionRepository
+    public Flux<PaymentTransactionWrapper> fetchPaymentTransactions(String account) {
+        Flux<PaymentTransactionWrapper> paymentTransactionFlux = paymentTransactionRepository
             .findByAccount(account)
             .flatMap(pt -> signingService
                 .sign(pt.getBlockHash().getBytes(StandardCharsets.UTF_8))
-                .map(signature -> new PaymentTransactionDTO(pt, signature))
+                .map(signature -> new PaymentTransactionWrapper(new PaymentTransactionDTO(pt), signature))
             )
             .share();
 
         paymentTransactionFlux
             .reduce((p1, p2) -> p2)
-            .subscribe(lastTransaction -> {
-                offsetRepository.save(
-                    account, lastTransaction.getPaymentTransaction().getId()
-                ).subscribe();
-            });
+            .flatMap(lastTransaction -> offsetRepository.save(
+                account, lastTransaction.getPaymentTransaction().getId()
+            ))
+            .subscribe();
 
         return paymentTransactionFlux;
     }

@@ -24,7 +24,7 @@ public class PaymentKafkaConsumerConfigTest {
         Mockito.when(mockedConsumerTemplate.receive()).thenReturn(receiverRecordFlux);
 
         StepVerifier.create(new PaymentKafkaConsumerConfig().paymentEventFlux(mockedConsumerTemplate))
-                .expectNextMatches(pe -> pe.getCurrency().equals(EUR))
+                .expectNextMatches(tuple -> tuple._1().getCurrency().equals(EUR))
                 .expectNextCount(9)
                 .expectComplete()
                 .verify();

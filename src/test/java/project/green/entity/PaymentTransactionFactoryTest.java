@@ -1,6 +1,5 @@
 package project.green.entity;
 
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import project.green.kafka.payments.PaymentEvent;
 import project.green.kafka.payments.PaymentEventWithPerspective;
@@ -10,17 +9,15 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static project.green.entity.Currency.EUR;
 import static project.green.simulation.PaymentEventSupport.generatePaymentEvent;
 import static project.green.simulation.PaymentEventSupport.generatePaymentEventWithPerspective;
 import static project.green.support.HashingSupport.hashingService;
+import static project.green.util.DateTimeUtil.FORMATTER;
 
-@Slf4j
 public class PaymentTransactionFactoryTest {
-    private final static DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
 
     @Test
     public void nextPaymentTransactionHasPreviousBlockHash() {
@@ -47,9 +44,9 @@ public class PaymentTransactionFactoryTest {
                 "NL29INGB7591500313",
                 "Trisha Funk",
                 "Therese Greenholt PhD",
-                100d,
+                10000L,
                 EUR,
-                ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 17, 2), ZoneId.of("GMT+01:00")),
+                ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 17, 2), ZoneId.of("Europe/Paris")),
                 "message",
                 "12345",
                 "extraDescription"
@@ -62,9 +59,9 @@ public class PaymentTransactionFactoryTest {
             .concat(hashingService.hash("NL29INGB7591500313".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("Trisha Funk".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("Therese Greenholt PhD".getBytes(StandardCharsets.UTF_8)))
-            .concat(hashingService.hash(new Byte[]{Double.valueOf(100d).byteValue()}))
+            .concat(hashingService.hash(String.valueOf(10000L).getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash(EUR.toString().getBytes(StandardCharsets.UTF_8)))
-            .concat(hashingService.hash(ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 17, 2), ZoneId.of("GMT+01:00")).format(FORMATTER).getBytes(StandardCharsets.UTF_8)))
+            .concat(hashingService.hash(ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 17, 2), ZoneId.of("Europe/Paris")).format(FORMATTER).getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("message".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("12345".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("extraDescription".getBytes(StandardCharsets.UTF_8)))
@@ -92,9 +89,9 @@ public class PaymentTransactionFactoryTest {
                 "NL77INGB7224894642",
                 "Trisha Funk",
                 "Gandalf",
-                150d,
+                15000L,
                 EUR,
-                ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 18, 4), ZoneId.of("GMT+01:00")),
+                ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 18, 4), ZoneId.of("Europe/Paris")),
                 "messageTwo",
                 "123456",
                 "extraDescription2"
@@ -110,9 +107,9 @@ public class PaymentTransactionFactoryTest {
             .concat(hashingService.hash("NL77INGB7224894642".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("Trisha Funk".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("Gandalf".getBytes(StandardCharsets.UTF_8)))
-            .concat(hashingService.hash(new Byte[]{Double.valueOf(150d).byteValue()}))
+            .concat(hashingService.hash(String.valueOf(15000L).getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash(EUR.toString().getBytes(StandardCharsets.UTF_8)))
-            .concat(hashingService.hash(ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 18, 4), ZoneId.of("GMT+01:00")).format(FORMATTER).getBytes(StandardCharsets.UTF_8)))
+            .concat(hashingService.hash(ZonedDateTime.of(LocalDateTime.of(2022, 7, 6, 18, 4), ZoneId.of("Europe/Paris")).format(FORMATTER).getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("messageTwo".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("123456".getBytes(StandardCharsets.UTF_8)))
             .concat(hashingService.hash("extraDescription2".getBytes(StandardCharsets.UTF_8)))

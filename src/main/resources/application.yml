@@ -28,3 +28,8 @@ payments:
 
 flux:
   timeout: 10
+
+kafka:
+  commit:
+    interval: PT5s
+    batch-size: 100

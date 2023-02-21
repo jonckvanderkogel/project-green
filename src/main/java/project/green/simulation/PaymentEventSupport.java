@@ -1,12 +1,15 @@
 package project.green.simulation;
 
 import com.github.javafaker.Faker;
+import io.vavr.Tuple2;
+import org.apache.kafka.common.TopicPartition;
 import org.iban4j.CountryCode;
 import org.iban4j.Iban;
 import project.green.kafka.payments.PaymentEvent;
 import project.green.kafka.payments.PaymentEventWithPerspective;
+import reactor.core.publisher.Mono;
+import reactor.kafka.receiver.ReceiverOffset;
 
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.SplittableRandom;
 import java.util.stream.Collectors;
@@ -45,7 +48,7 @@ public class PaymentEventSupport {
             trimToMax255(FAKER.name().fullName()),
             generateAmount(),
             EUR,
-            ZonedDateTime.now(ZoneId.of("GMT+01:00")),
+            ZonedDateTime.now(),
             trimToMax255(FAKER.dune().quote()),
             generatePaymentReference(),
             trimToMax255(FAKER.hobbit().quote())
@@ -64,7 +67,7 @@ public class PaymentEventSupport {
             trimToMax255(FAKER.name().fullName()),
             generateAmount(),
             EUR,
-            ZonedDateTime.now(ZoneId.of("GMT+01:00")),
+            ZonedDateTime.now(),
             trimToMax255(FAKER.dune().quote()),
             generatePaymentReference(),
             trimToMax255(FAKER.hobbit().quote())
@@ -87,6 +90,32 @@ public class PaymentEventSupport {
         );
     }
 
+    public static ReceiverOffset generateReceiverOffset() {
+        return new ReceiverOffset() {
+            @Override
+            public TopicPartition topicPartition() {
+                return new TopicPartition("foo", 1);
+            }
+
+            @Override
+            public long offset() {
+                return 1L;
+            }
+
+            @Override
+            public void acknowledge() {}
+
+            @Override
+            public Mono<Void> commit() {
+                return Mono.empty();
+            }
+        };
+    }
+
+    public static Tuple2<PaymentEvent, ReceiverOffset> generateTuple() {
+        return new Tuple2<>(generatePaymentEvent(), generateReceiverOffset());
+    }
+
     public static PaymentEvent swapFromTo(PaymentEvent origin) {
         return new PaymentEvent(
             origin.getToAccount(),
@@ -102,8 +131,8 @@ public class PaymentEventSupport {
         );
     }
 
-    private static Double generateAmount() {
-        return RANDOM.nextDouble(1d, 1500d);
+    private static Long generateAmount() {
+        return RANDOM.nextLong(100L, 150000L);
     }
 
     private static String generatePaymentReference() {

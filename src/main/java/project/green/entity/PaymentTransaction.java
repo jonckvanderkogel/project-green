@@ -20,7 +20,7 @@ public class PaymentTransaction implements Block {
     private String toAccount;
     private String fromName;
     private String toName;
-    private Double value;
+    private Long value;
     private Currency currency;
     private ZonedDateTime transactionDateTime;
     private String message;
